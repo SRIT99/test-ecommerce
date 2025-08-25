@@ -16,13 +16,6 @@ const paymentRoutes = require('./routes/payments');
 // Load env vars
 dotenv.config();
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const productRoutes = require('./routes/products');
-const userRoutes = require('./routes/users');
-const orderRoutes = require('./routes/orders');
-const paymentRoutes = require('./routes/payments.js');
-
 // Import error middleware
 const errorHandler = require('./middleware/error');
 
