@@ -1,5 +1,6 @@
 import React from 'react'
-
+import { useState, useEffect } from 'react';
+import ProductCard from '../components/ProductCard';
 const ProductsPage = () => {
       const [products, setProducts] = useState([]);
         
@@ -68,7 +69,7 @@ const ProductsPage = () => {
         }, []);
 
   return (
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 dark:bg-gradient-to-br dark:from-green-800 dark:to-blue-500">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 text-slate-800 dark:text-slate-200">All Products</h2>
               <p className="text-xl text-slate-600 dark:text-slate-400">Browse fresh agricultural products from farmers across Nepal</p>

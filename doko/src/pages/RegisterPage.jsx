@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { useState } from 'react';
 const RegisterPage = ({ setCurrentPage, setCurrentUser }) => {
     const [formData, setFormData] = useState({
         name: '',
@@ -58,7 +58,7 @@ const RegisterPage = ({ setCurrentPage, setCurrentUser }) => {
 
     return (
         <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white dark:bg-slate-800 p-8 rounded-lg shadow-md">
+            <div className="max-w-md w-full space-y-8 bg-white dark:bg-slate-800 p-8 rounded-lg shadow-md dark:bg-gradient-to-br dark:from-green-800 dark:to-blue-500">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 dark:text-slate-100">
                         Create your account

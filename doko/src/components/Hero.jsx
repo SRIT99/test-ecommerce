@@ -1,3 +1,4 @@
+import image1 from '../assets/hero.jpg';
 export default function Hero() {
     return (
         <section className="bg-gradient-to-r from-green-100 to-green-200 py-20">
@@ -19,8 +20,8 @@ export default function Hero() {
                 {/* Image */}
                 <div className="flex-1 mt-10 md:mt-0">
                     <img
-                        src="https://images.unsplash.com/photo-1606788075761-3bade34e4f09"
-                        alt="Fresh vegetables"
+                        src={image1}
+                        alt="imageoftea"
                         className="rounded-2xl shadow-lg"
                     />
                 </div>

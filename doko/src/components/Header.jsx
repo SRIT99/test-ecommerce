@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logo from '../assets/logo.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Header = ({ currentUser, setCurrentUser }) => {
@@ -41,20 +42,30 @@ const Header = ({ currentUser, setCurrentUser }) => {
   return (
     <header className="bg-white dark:bg-slate-800 shadow-md sticky top-0 z-50 transition-colors duration-300">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          <Link to="/" className="flex items-center text-primary dark:text-primary-light">
-            <img
-              src="data:image/svg+xml;base64,..."
-              alt="DOKO Logo"
-              className="h-10 mr-2"
-            />
-            <h1 className="text-xl font-bold">DOKO</h1>
-          </Link>
-
-          <div className="flex items-center space-x-4">
+        {/* Logo Row */}
+        <div className="flex items-center justify-between py-2">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center text-primary dark:text-primary-light">
+              <img
+                src={logo}
+                alt="DOKO Logo"
+                className="h-12 w-12 object-contain mr-2"
+              />
+              <h1
+                className="text-2xl font-extrabold bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text "
+              >
+                DOKO
+              </h1>
+            </Link>
+          </div>
+          <div className="flex items-center space-x-2">
+            <select className="px-2 py-1 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+              <option>English</option>
+              <option>नेपाली</option>
+            </select>
             <button
               onClick={toggleDarkMode}
-              className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className="ml-2 p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             >
               {darkMode ? (
                 <i className="fas fa-sun text-yellow-400"></i>
@@ -62,9 +73,82 @@ const Header = ({ currentUser, setCurrentUser }) => {
                 <i className="fas fa-moon text-slate-700"></i>
               )}
             </button>
+          </div>
+        </div>
 
+        {/* Nav and Right Section Row */}
+        <div className="flex justify-between items-center py-2">
+          {/* Desktop Nav and Right Section */}
+          <div className="hidden md:flex flex-1 items-center justify-between w-full">
+            {/* Left: Nav Links */}
+            <nav>
+              <ul className="flex flex-row space-x-6">
+                {navLinks.map(({ name, path }) => (
+                  <li key={name}>
+                    <Link
+                      to={path}
+                      className={`block py-2 px-2 rounded transition-colors ${location.pathname === path
+                        ? 'text-primary dark:text-primary-light bg-slate-100 dark:bg-slate-700'
+                        : 'text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light'
+                      }`}
+                    >
+                      {name}
+                    </Link>
+                  </li>
+                ))}
+                {currentUser && (
+                  <li>
+                    <Link
+                      to="/dashboard"
+                      className={`block py-2 px-2 rounded transition-colors ${location.pathname === '/dashboard'
+                        ? 'text-primary dark:text-primary-light bg-slate-100 dark:bg-slate-700'
+                        : 'text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light'
+                      }`}
+                    >
+                      Dashboard
+                    </Link>
+                  </li>
+                )}
+              </ul>
+            </nav>
+
+            {/* Right: Auth & Language */}
+            <div className="flex items-center space-x-2">
+              {currentUser ? (
+                <>
+                  <span className="text-slate-700 dark:text-slate-300 mr-2">
+                    Welcome, {currentUser.name}
+                  </span>
+                  <button
+                    className="px-4 py-2 border border-primary dark:border-primary-light text-primary dark:text-primary-light rounded hover:bg-primary dark:hover:bg-primary-light hover:text-white transition-colors"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="px-4 py-2 border border-primary dark:border-primary-light text-primary dark:text-primary-light rounded hover:bg-primary dark:hover:bg-primary-light hover:text-white transition-colors"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-4 py-2 bg-orange-500 dark:bg-primary-light text-white rounded hover:bg-orange-600 dark:hover:bg-dark transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile: Hamburger & Dark Mode */}
+          <div className="flex md:hidden items-center space-x-2">
             <button
-              className="md:hidden text-slate-700 dark:text-slate-300"
+              className="text-slate-700 dark:text-slate-300"
               onClick={toggleMobileMenu}
             >
               <i className="fas fa-bars text-xl"></i>
@@ -72,19 +156,20 @@ const Header = ({ currentUser, setCurrentUser }) => {
           </div>
         </div>
 
+        {/* Mobile Nav */}
         <nav
           className={`${mobileMenuOpen ? 'block' : 'hidden'
-            } md:flex absolute md:static top-16 left-0 w-full md:w-auto bg-white dark:bg-slate-800 md:bg-transparent shadow-md md:shadow-none py-4 md:py-0 transition-all duration-300`}
+            } md:hidden absolute top-16 left-0 w-full bg-white dark:bg-slate-800 shadow-md py-4 transition-all duration-300 z-40`}
         >
-          <ul className="flex flex-col md:flex-row md:space-x-6">
+          <ul className="flex flex-col space-y-2">
             {navLinks.map(({ name, path }) => (
               <li key={name}>
                 <Link
                   to={path}
-                  className={`block py-2 px-4 md:px-2 md:py-1 rounded transition-colors ${location.pathname === path
-                      ? 'text-primary dark:text-primary-light bg-slate-100 dark:bg-slate-700'
-                      : 'text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light'
-                    }`}
+                  className={`block py-2 px-4 rounded transition-colors ${location.pathname === path
+                    ? 'text-primary dark:text-primary-light bg-slate-100 dark:bg-slate-700'
+                    : 'text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light'
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {name}
@@ -95,56 +180,49 @@ const Header = ({ currentUser, setCurrentUser }) => {
               <li>
                 <Link
                   to="/dashboard"
-                  className={`block py-2 px-4 md:px-2 md:py-1 rounded transition-colors ${location.pathname === '/dashboard'
-                      ? 'text-primary dark:text-primary-light bg-slate-100 dark:bg-slate-700'
-                      : 'text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light'
-                    }`}
+                  className={`block py-2 px-4 rounded transition-colors ${location.pathname === '/dashboard'
+                    ? 'text-primary dark:text-primary-light bg-slate-100 dark:bg-slate-700'
+                    : 'text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light'
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Dashboard
                 </Link>
               </li>
             )}
+            <li className="flex items-center space-x-2 mt-2">
+              {currentUser ? (
+                <button
+                  className="flex-1 px-4 py-2 border border-primary dark:border-primary-light text-primary dark:text-primary-light rounded hover:bg-primary dark:hover:bg-primary-light hover:text-white transition-colors"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="flex-1 px-4 py-2 border border-primary dark:border-primary-light text-primary dark:text-primary-light rounded hover:bg-primary dark:hover:bg-primary-light hover:text-white transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="flex-1 px-4 py-2 bg-orange-500 dark:bg-primary-light text-white rounded hover:bg-orange-600 dark:hover:bg-dark transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+              <select className="ml-2 px-2 py-1 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                <option>English</option>
+                <option>नेपाली</option>
+              </select>
+            </li>
           </ul>
         </nav>
-
-        <div className="hidden md:flex items-center space-x-2 mt-4 md:mt-0">
-          {currentUser ? (
-            <div className="flex items-center space-x-4">
-              <span className="text-slate-700 dark:text-slate-300">
-                Welcome, {currentUser.name}
-              </span>
-              <button
-                className="px-4 py-2 border border-primary dark:border-primary-light text-primary dark:text-primary-light rounded hover:bg-primary dark:hover:bg-primary-light hover:text-white transition-colors"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="px-4 py-2 border border-primary dark:border-primary-light text-primary dark:text-primary-light rounded hover:bg-primary dark:hover:bg-primary-light hover:text-white transition-colors"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="px-4 py-2 bg-primary dark:bg-primary-light text-white rounded hover:bg-dark dark:hover:bg-dark transition-colors"
-              >
-                Sign Up
-              </Link>
-            </>
-          )}
-
-          <div className="ml-4">
-            <select className="px-2 py-1 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300">
-              <option>English</option>
-              <option>नेपाली</option>
-            </select>
-          </div>
-        </div>
       </div>
     </header>
   );

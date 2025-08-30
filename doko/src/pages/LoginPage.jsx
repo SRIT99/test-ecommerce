@@ -58,6 +58,7 @@ const LoginPage = ({ setCurrentUser }) => {
                                 <option value="buyer">Buyer</option>
                                 <option value="seller">Seller/Farmer</option>
                                 <option value="admin">Administrator</option>
+                                <option value="merchant">Merchant/Transporter</option>
                             </select>
                         </div>
 
