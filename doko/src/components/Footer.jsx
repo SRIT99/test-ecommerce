@@ -24,7 +24,7 @@ const FooterLinks = [
 ];
 
 
-const Footer = ({ setCurrentPage }) => {
+const Footer = () => {
     return (
         <div className="bg-slate-800 dark:bg-slate-950 text-white mt-12 transition-colors duration-300">
             <div className="container mx-auto px-4 py-12">
@@ -33,98 +33,31 @@ const Footer = ({ setCurrentPage }) => {
                         <h3 className="text-xl font-bold mb-4">DOKO</h3>
                         <p className="text-slate-400 mb-4">Smart Agro-based Marketplace connecting farmers directly with buyers throughout Nepal.</p>
                         <div className="flex space-x-4">
-                             {/* Footer Links */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 col-span-2 md:pl-10">
-            <div>
-              <div className="py-8 px-4">
-                <h1 className="sm:text-xl text-xl font-bold sm:text-left text-justify mb-3">
-                  Important Links
-                </h1>
-                <ul className="flex flex-col gap-3">
-                  {FooterLinks.map((link) => (
-                    <li
-                      className="cursor-pointer hover:text-primary hover:translate-x-1 duration-300 text-gray-200"
-                      key={link.title}
-                    >
-                      <span>{link.title}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div>
-              <div className="py-8 px-4">
-                <h1 className="sm:text-xl text-xl font-bold sm:text-left text-justify mb-3">
-                  Links
-                </h1>
-                <ul className="flex flex-col gap-3">
-                  {FooterLinks.map((link) => (
-                    <li
-                      className="cursor-pointer hover:text-primary hover:translate-x-1 duration-300 text-gray-200"
-                      key={link.title}
-                    >
-                      <span>{link.title}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+         
 
-            {/* social links */}
-
-            <div>
-              <div className="flex items-center gap-3 mt-6">
-                <a href="https://instagram.com/igsuraj.fx">
-                  <FaInstagram className="text-3xl" />
-                </a>
-                <a href="https://facebook.com/surajrautdharan">
-                  <FaFacebook className="text-3xl" />
-                </a>
-                <a href="https://linkedin.com/in/suraj-raut-5609a12b6">
-                  <FaLinkedin className="text-3xl" />
-                </a>
-              </div>
-              <div className="mt-6">
-                <div className="flex items-center gap-3">
-                  <FaMapLocationDot />
-                  <p>Dharan, Koshi Pradesh</p>
-                </div>
-                <div className="flex items-center gap-3 mt-3">
-                  <IoCall />
-                  <p>+977 9815186669</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* End of Footer Links */}
                         </div>
                     </div>
 
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
                         <ul className="space-y-2">
-                            {['home', 'products', 'farmers', 'buyers', 'about'].map((page) => (
-                                <li key={page}>
-                                    <a
-                                        href="#"
-                                        className="text-slate-400 hover:text-primary transition-colors"
-                                        onClick={() => setCurrentPage(page)}
-                                    >
-                                        {page.charAt(0).toUpperCase() + page.slice(1)}
-                                    </a>
-                                </li>
-                            ))}
+                            <li><a href="/" className="text-slate-400 hover:text-primary transition-colors">Home</a></li>
+                            <li><a href="/products" className="text-slate-400 hover:text-primary transition-colors">Products</a></li>
+                            <li><a href="/farmers" className="text-slate-400 hover:text-primary transition-colors">Farmers</a></li>
+                            <li><a href="/buyers" className="text-slate-400 hover:text-primary transition-colors">Buyers</a></li>
+                            <li><a href="/about" className="text-slate-400 hover:text-primary transition-colors">About</a></li>
+                            <li><a href="/contact" className="text-slate-400 hover:text-primary transition-colors">Contact Us</a></li>
                         </ul>
                     </div>
 
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Support</h3>
                         <ul className="space-y-2">
-                            {['Help Center', 'FAQs', 'Contact Us', 'Privacy Policy', 'Terms of Service'].map((item) => (
-                                <li key={item}>
-                                    <a href="#" className="text-slate-400 hover:text-primary transition-colors">{item}</a>
-                                </li>
-                            ))}
+                            <li><a href="#" className="text-slate-400 hover:text-primary transition-colors">Help Center</a></li>
+                            <li><a href="#" className="text-slate-400 hover:text-primary transition-colors">FAQs</a></li>
+                            <li><a href="/contact" className="text-slate-400 hover:text-primary transition-colors">Contact Us</a></li>
+                            <li><a href="#" className="text-slate-400 hover:text-primary transition-colors">Privacy Policy</a></li>
+                            <li><a href="#" className="text-slate-400 hover:text-primary transition-colors">Terms of Service</a></li>
                         </ul>
                     </div>
 

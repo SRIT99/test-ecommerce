@@ -1,15 +1,11 @@
-import react, { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Aos from "aos";
 import Hero from "../components/Hero";
 import FeatureCard from "../components/FeatureCard";
 import ProductCard from "../components/ProductCard";
+import { Link } from "react-router-dom";
+const HomePage = () => {
 
-const HomePage = ({ setCurrentPage }) => {
-  const [orderPopup, setOrderPopup] = useState(false);
-
-  const handleOrderPopup = () => {
-    setOrderPopup(!orderPopup);
-  };
   useEffect(() => {
     Aos.init({
       offset: 100,
@@ -75,37 +71,36 @@ const HomePage = ({ setCurrentPage }) => {
 
 
   return (
-    <div className="container w-full h-full">
+    <div className="container w-full h-full dark:bg-gradient-to-br dark:from-green-800 dark:to-blue-500">
       <Hero />
 
       <div>
         {/* Hero Section */}
-        <section className="relative bg-[linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('https://images.unsplash.com/photo-1625246335525-8f57a4fb1bc0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center text-white py-20 rounded-lg mb-8">
+        <section className="relative bg-white dark:bg-slate-800 text-black dark:text-white py-20 rounded-lg mb-8">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">Connecting Farmers Directly to Buyers</h2>
             <p className="text-xl max-w-2xl mx-auto mb-8">DOKO is a smart agro-based marketplace that eliminates middlemen, ensures fair prices, and brings transparency to agricultural trade in Nepal.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button
-                className="bg-primary hover:bg-dark text-white py-3 px-6 rounded-lg transition-colors"
-                onClick={() => setCurrentPage('register')}
-              >
-                I'm a Farmer
-              </button>
-              <button
-                className="bg-secondary hover:bg-amber-600 text-white py-3 px-6 rounded-lg transition-colors"
-                onClick={() => setCurrentPage('register')}
-              >
-                I'm a Buyer
-              </button>
-              <button
-                className="border-2 border-white hover:bg-white hover:text-slate-900 text-white py-3 px-6 rounded-lg transition-colors"
-                onClick={() => setCurrentPage('about')}
-              >
-                Learn More
-              </button>
+              <Link to="/register">
+                <button className="bg-blue-600 hover:bg-blue-800 text-white py-3 px-6 rounded-lg transition-colors">
+                  I'm a Farmer
+                </button>
+              </Link>
+              <Link to="/register">
+                <button className="bg-amber-500 hover:bg-amber-600 text-white py-3 px-6 rounded-lg transition-colors">
+                  I'm a Buyer
+                </button>
+              </Link>
+              <Link to="/about">
+                <button className="border-2 border-white hover:bg-white hover:text-slate-900 text-white py-3 px-6 rounded-lg transition-colors">
+                  Learn More
+                </button>
+              </Link>
             </div>
           </div>
         </section>
+
+      
 
         {/* Features Section */}
         <section className="py-12">
@@ -143,14 +138,38 @@ const HomePage = ({ setCurrentPage }) => {
             </div>
 
             <div className="text-center mt-12">
-              <button className="border-2 border-primary dark:border-primary-light text-primary dark:text-primary-light hover:bg-primary dark:hover:bg-primary-light hover:text-white py-3 px-8 rounded-lg transition-colors"
-                onClick={() => setCurrentPage('products')}
-              >
-                View All Products
-              </button>
+              <Link to="/products">
+                <button className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white py-3 px-8 rounded-lg transition-colors">
+                  View All Products
+                </button>
+              </Link>
             </div>
           </div>
         </section>
+          {/* Merchant Section */}
+        <section className="w-full py-16 bg-grey-200 to-blue-50 dark:from-green-900 dark:to-blue-900 mt-8 rounded-lg">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-green-800 dark:text-green-200">
+              Become a DOKO Merchant
+            </h2>
+            <p className="text-xl max-w-2xl mx-auto mb-8 text-slate-700 dark:text-slate-300">
+              Join our platform as a merchant and reach thousands of buyers looking for fresh, local produce. Enjoy easy product listing, order management, and secure payments.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link to="/merchant">
+                <button className="bg-orange-500 hover:bg-orange-600 text-white py-3 px-8 rounded-lg transition-colors font-semibold">
+                  Register as Merchant
+                </button>
+              </Link>
+              <Link to="/about">
+                <button className="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white py-3 px-8 rounded-lg transition-colors font-semibold">
+                  Learn More
+                </button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
       </div>
 
     </div>
