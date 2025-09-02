@@ -14,6 +14,7 @@ import TransportMerchantForm from './components/TransportMerchantForm';
 import MerchantDashboard from './pages/MerchantDashboard';
 import FarmerPage from './pages/FarmerPage';
 import ContactPage from './pages/ContactPage';
+import ProductPage from './pages/SingleProductPage';
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -46,6 +47,8 @@ function App() {
   <Route path="/register" element={<RegisterPage />} />
   <Route path="/merchant" element={<MerchantPage />} />
   <Route path="/merchant/apply" element={<TransportMerchantForm />} />
+
+        <Route path="/product/:id" element={<ProductPage />} />
         <Route
           path="*"
           element={
