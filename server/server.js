@@ -1,92 +1,32 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
-const hpp = require('hpp');
-const dotenv = require('dotenv');
-const authRoutes = require('./routes/auth');
-const productRoutes = require('./routes/products');
-const userRoutes = require('./routes/users');
-const orderRoutes = require('./routes/orders');
-const paymentRoutes = require('./routes/payments');
+require('dotenv').config() // to access variable of .env file
+const express = require("express")
+const cors = require("cors")
+const connectToDatabase = require("./src/database/db")
+const app = express()
+const authRoutes = require("./src/routes/auth")
+const productRoutes = require("./src/routes/productRoutes") // <-- Add this line
 
-// Load env vars
-dotenv.config();
 
-// Import error middleware
-const errorHandler = require('./middleware/error');
-
-// Initialize express app
-const app = express();
-
-// Body parser middleware
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true }));
-
-// Security middleware
-app.use(helmet());
-app.use(mongoSanitize());
-app.use(xss());
-app.use(hpp());
-
-// CORS middleware
+//middlewares
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
-}));
+  origin : ["http://localhost:5174", "https://blogpost-nine-flax.vercel.app"]
+}))
+app.use(express.json())
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use('/api', limiter);
+//Database connection
+connectToDatabase()
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
+// ⬇️ Routes should be registered BEFORE starting the server
+//user login register garne route
+app.use("/api/auth", authRoutes)
 
-// Routes
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/products', productRoutes);
-app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/orders', orderRoutes);
-app.use('/api/v1/payments', paymentRoutes);
+//Product add garne route
+app.use("/api/products", productRoutes);
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Server is running successfully',
-    timestamp: new Date().toISOString()
-  });
-});
+//For static files
+app.use(express.static('./uploads'))
 
-// Error handling middleware
-app.use(errorHandler);
+app.listen(process.env.PORT, ()=>{  //.env file bata PORT var access gareko
+    console.log("Node JS project has started")
+}) 
 
-// Handle unhandled routes
-app.all('*', (req, res, next) => {
-  res.status(404).json({
-    success: false,
-    message: `Can't find ${req.originalUrl} on this server!`
-  });
-});
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-module.exports = app;

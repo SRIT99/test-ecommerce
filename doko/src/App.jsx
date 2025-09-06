@@ -1,8 +1,10 @@
 import './App.css';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoute';
 
+import ProtectedRoute from './components/ProtectedRoute';
+import ProductCard from './components/ProductCard';
+import FarmerCard from './components/FarmerCard';
 import ProductsPage from './pages/ProductsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -46,12 +48,15 @@ function App() {
   <Route path="/register" element={<RegisterPage />} />
   <Route path="/merchant" element={<MerchantPage />} />
   <Route path="/merchant/apply" element={<TransportMerchantForm />} />
+  <Route path="/product/:id" element={<ProductCard />} />
+  <Route path='/farmer/:id' element={< FarmerCard />}/>
+
         <Route
           path="*"
           element={
             <div className="container mx-auto px-4 py-12 text-center">
               <h2 className="text-3xl font-bold mb-4 text-slate-800 dark:text-slate-200">404 - Page Not Found</h2>
-              <p className="text-xl text-slate-600 dark:text-slate-400">This page doesn’t exist.</p>
+              <p className="text-xl text-slate-600 dark:text-slate-400">This page doesn't exist.</p>
             </div>
           }
         />
