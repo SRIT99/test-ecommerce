@@ -21,28 +21,28 @@ const HomePage = () => {
       price: 'NPR 60/kg',
       location: 'Dharan, Koshi',
       seller: 'Ram Shrestha',
-      image: 'https://images.unsplash.com/photo-1561136594-7f68413baa99?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      image: 'https://imgs.search.brave.com/BjiRQ48OxjMy8r993C_RwsoMkQblecv2ZsZ4gX6fV14/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzY5LzI4LzI3/LzM2MF9GXzY5Mjgy/NzY5X25uR1g3U2lk/QUZRczhTd1VnbVpG/eDVabHo2c1hSa2w0/LmpwZw'
     },
     {
       name: 'Fresh Cauliflower',
       price: 'NPR 40/piece',
       location: 'Pokhara, Gandaki',
       seller: 'Sita Devi',
-      image: 'https://images.unsplash.com/photo-1601056639636-ecd50c53e2c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      image: 'https://imgs.search.brave.com/751g8YVh4K4KZzKGvF3RAXmK91f9x_lcYP9y1lQVGao/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvNjQx/MTQ3NTQ4L3Bob3Rv/L2ZyZXNoLWNhdWxp/Zmxvd2VyLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1NcmpP/NG91U1VYWVFPWGJM/QzB2MUdJU2d5VldL/c0Jwb3YzVGJLZGcz/VUZrPQ'
     },
     {
       name: 'Organic Potatoes',
       price: 'NPR 45/kg',
       location: 'Kathmandu, Bagmati',
       seller: 'Gopal Parajuli',
-      image: 'https://images.unsplash.com/photo-1591768575198-88dac53fbd0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      image: 'https://imgs.search.brave.com/JXv4nhX8kl8WoXpvkexjh6oWsUVS_jWi9D31gLx5V2U/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvNDc2/MzY4MTM5L3Bob3Rv/L3doaXRlLXBvdGF0/b2VzLmpwZz9zPTYx/Mng2MTImdz0wJms9/MjAmYz03T0JyZDFU/dWl4TUpVYTZLTW5J/SV9RYWVScFdVZVF6/RG5UeHpMV04ta00w/PQ'
     },
     {
       name: 'Fresh Strawberries',
       price: 'NPR 250/kg',
       location: 'Ilam, Province 1',
       seller: 'Mina Rai',
-      image: 'https://images.unsplash.com/photo-1598030304671-5aa1d6f13fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      image: 'https://imgs.search.brave.com/Tr5puwY3ARPViRKpt7BEwj28Ic9a0QBwZCk4ESEIpAA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvNDg3/MDUxMDYyL3Bob3Rv/L3N0cmF3YmVycmll/cy5qcGc_cz02MTJ4/NjEyJnc9MCZrPTIw/JmM9VUdqd0RpcHV4/ZGxlbE9kOEJpbEN3/dVc1VV9YWF9SUTB6/bUxZQXZXM2VEVT0'
     }
   ];
 
@@ -100,7 +100,7 @@ const HomePage = () => {
           </div>
         </section>
 
-      
+
 
         {/* Features Section */}
         <section className="py-12">
@@ -146,7 +146,7 @@ const HomePage = () => {
             </div>
           </div>
         </section>
-          {/* Merchant Section */}
+        {/* Merchant Section */}
         <section className="w-full py-16 bg-grey-200 to-blue-50 dark:from-green-900 dark:to-blue-900 mt-8 rounded-lg">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-green-800 dark:text-green-200">

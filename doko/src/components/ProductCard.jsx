@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import React from 'react'
-import { Link } from 'react-router-dom';
 const ProductCard = ({ product }) => {
   const initials = product.seller.split(' ').map(name => name[0]).join('');
 

@@ -5,12 +5,16 @@ const SingleProductPage = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`/api/products/${id}`)
       .then((res) => res.json())
-      .then((data) => setProduct(data))
-      .catch((err) => console.error('Error fetching product:', err));
+      .then((data) => {
+        setProduct(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [id]);
 
   const handleAddToCart = () => {
@@ -18,8 +22,12 @@ const SingleProductPage = () => {
     alert(`Added ${quantity} ${product.unit} of ${product.name} to cart`);
   };
 
-  if (!product) {
+  if (loading) {
     return <div className="text-center py-20 text-slate-500">Loading product...</div>;
+  }
+
+  if (!product) {
+    return <div className="text-center py-20 text-red-500">Product not found.</div>;
   }
 
   return (
@@ -71,65 +79,69 @@ const SingleProductPage = () => {
           </div>
         </div>
         {/* Reviews Section */}
-<div className="mt-12">
-  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Customer Reviews</h2>
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Customer Reviews</h2>
 
-  {/* Average Rating */}
-  <div className="mb-6">
-    <p className="text-lg text-slate-700 dark:text-slate-300">
-      ⭐ {product.averageRating} / 5 ({product.reviews.length} reviews)
-    </p>
-  </div>
+          {/* Average Rating */}
+          <div className="mb-6">
+            <p className="text-lg text-slate-700 dark:text-slate-300">
+              ⭐ {product.averageRating || 0} / 5 ({product.reviews ? product.reviews.length : 0} reviews)
+            </p>
+          </div>
 
-  {/* Individual Reviews */}
-  <div className="space-y-6">
-    {product.reviews.map((review, index) => (
-      <div key={index} className="border-b border-slate-200 dark:border-slate-700 pb-4">
-        <p className="font-semibold text-slate-800 dark:text-slate-100">{review.name}</p>
-        <p className="text-yellow-500">{"⭐".repeat(review.rating)}</p>
-        <p className="text-slate-600 dark:text-slate-300">{review.comment}</p>
-      </div>
-    ))}
-  </div>
+          {/* Individual Reviews */}
+          <div className="space-y-6">
+            {(product.reviews && product.reviews.length > 0) ? (
+              product.reviews.map((review, index) => (
+                <div key={index} className="border-b border-slate-200 dark:border-slate-700 pb-4">
+                  <p className="font-semibold text-slate-800 dark:text-slate-100">{review.name}</p>
+                  <p className="text-yellow-500">{"⭐".repeat(review.rating)}</p>
+                  <p className="text-slate-600 dark:text-slate-300">{review.comment}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-slate-500">No reviews yet.</p>
+            )}
+          </div>
 
-  {/* Review Form */}
-  <div className="mt-10">
-    <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-2">Leave a Review</h3>
-    <form onSubmit={(e) => {
-      e.preventDefault();
-      // Submit logic here
-      alert('Review submitted!');
-    }}>
-      <input
-        type="text"
-        placeholder="Your name"
-        className="w-full mb-2 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-        required
-      />
-      <select
-        className="w-full mb-2 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-        required
-      >
-        <option value="">Rating</option>
-        {[1, 2, 3, 4, 5].map((r) => (
-          <option key={r} value={r}>{r} Star{r > 1 ? 's' : ''}</option>
-        ))}
-      </select>
-      <textarea
-        placeholder="Your review"
-        className="w-full mb-4 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-        rows="4"
-        required
-      />
-      <button
-        type="submit"
-        className="bg-primary hover:bg-dark text-white px-6 py-2 rounded-lg"
-      >
-        Submit Review
-      </button>
-    </form>
-  </div>
-</div>
+          {/* Review Form */}
+          <div className="mt-10">
+            <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-2">Leave a Review</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              // Submit logic here
+              alert('Review submitted!');
+            }}>
+              <input
+                type="text"
+                placeholder="Your name"
+                className="w-full mb-2 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                required
+              />
+              <select
+                className="w-full mb-2 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                required
+              >
+                <option value="">Rating</option>
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <option key={r} value={r}>{r} Star{r > 1 ? 's' : ''}</option>
+                ))}
+              </select>
+              <textarea
+                placeholder="Your review"
+                className="w-full mb-4 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                rows="4"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-primary hover:bg-dark text-white px-6 py-2 rounded-lg"
+              >
+                Submit Review
+              </button>
+            </form>
+          </div>
+        </div>
 
       </div>
     </div>

@@ -1,37 +1,64 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
 const FarmerProductForm = () => {
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     name: '',
-    category: '',
     price: '',
-    quantity: '',
+    unit: 'kg',
+    category: 'vegetable',
     description: '',
     imageUrl: '',
+    region: '',
+    stockQty: ''
   });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
-      await axios.post('/api/products', formData); // Replace with your actual endpoint
-      alert('Product listed successfully!');
-      setFormData({
+      const token = localStorage.getItem('token'); // Get auth token
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...form,
+          price: Number(form.price),
+          stockQty: Number(form.stockQty)
+        })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to add product');
+      }
+
+      setSuccess(true);
+      setForm({
         name: '',
-        category: '',
         price: '',
-        quantity: '',
+        unit: 'kg',
+        category: 'vegetable',
         description: '',
         imageUrl: '',
+        region: '',
+        stockQty: ''
       });
-    } catch (error) {
-      console.error('Error listing product:', error);
-      alert('Failed to list product.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   return (
@@ -40,60 +67,89 @@ const FarmerProductForm = () => {
         <h2 className="text-3xl font-bold text-primary dark:text-primary-light mb-6 text-center">
           List Your Farm Product
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <p className="text-red-500">{error}</p>}
+          {success && <p className="text-green-500">Product added successfully!</p>}
+
           <div>
             <label className="block text-slate-700 dark:text-slate-300 mb-1">Product Name</label>
             <input
               type="text"
               name="name"
-              value={formData.name}
+              value={form.name}
               onChange={handleChange}
+              placeholder="Product Name"
               required
               className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
             />
+          </div>
+
+          <div className="flex gap-4">
+            <div className="w-full">
+              <label className="block text-slate-700 dark:text-slate-300 mb-1">Price (NPR)</label>
+              <input
+                type="number"
+                name="price"
+                value={form.price}
+                onChange={handleChange}
+                placeholder="Price"
+                required
+                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+              />
+            </div>
+            <div className="w-full">
+              <label className="block text-slate-700 dark:text-slate-300 mb-1">Unit</label>
+              <select
+                name="unit"
+                value={form.unit}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+              >
+                <option value="kg">Kg</option>
+                <option value="piece">Piece</option>
+                <option value="bundle">Bundle</option>
+              </select>
+            </div>
           </div>
 
           <div>
             <label className="block text-slate-700 dark:text-slate-300 mb-1">Category</label>
             <select
               name="category"
-              value={formData.category}
+              value={form.category}
               onChange={handleChange}
-              required
               className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
             >
-              <option value="">Select Category</option>
-              <option value="vegetables">Vegetables</option>
-              <option value="fruits">Fruits</option>
-              <option value="grains">Grains</option>
-              <option value="dairy">Dairy</option>
-              <option value="others">Others</option>
+              <option value="vegetable">Vegetable</option>
+              <option value="fruit">Fruit</option>
+              <option value="grain">Grain</option>
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-slate-700 dark:text-slate-300 mb-1">Price (NPR)</label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-700 dark:text-slate-300 mb-1">Quantity (kg/ltr)</label>
-              <input
-                type="number"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-              />
-            </div>
+          <div>
+            <label className="block text-slate-700 dark:text-slate-300 mb-1">Region</label>
+            <input
+              type="text"
+              name="region"
+              value={form.region}
+              onChange={handleChange}
+              placeholder="Region"
+              required
+              className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+            />
+          </div>
+
+          <div>
+            <label className="block text-slate-700 dark:text-slate-300 mb-1">Stock Quantity</label>
+            <input
+              type="number"
+              name="stockQty"
+              value={form.stockQty}
+              onChange={handleChange}
+              placeholder="Stock Quantity"
+              required
+              className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+            />
           </div>
 
           <div>
@@ -101,9 +157,9 @@ const FarmerProductForm = () => {
             <input
               type="text"
               name="imageUrl"
-              value={formData.imageUrl}
+              value={form.imageUrl}
               onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
+              placeholder="Image URL"
               className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
             />
           </div>
@@ -112,18 +168,21 @@ const FarmerProductForm = () => {
             <label className="block text-slate-700 dark:text-slate-300 mb-1">Description</label>
             <textarea
               name="description"
-              value={formData.description}
+              value={form.description}
               onChange={handleChange}
+              placeholder="Product Description"
               rows="4"
+              required
               className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
             ></textarea>
           </div>
 
           <button
             type="submit"
+            disabled={loading}
             className="w-full py-3 px-6 bg-primary hover:bg-dark text-white font-semibold rounded transition-colors"
           >
-            Submit Product
+            {loading ? 'Adding Product...' : 'Add Product'}
           </button>
         </form>
       </div>

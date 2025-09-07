@@ -16,7 +16,9 @@ import TransportMerchantForm from './components/TransportMerchantForm';
 import MerchantDashboard from './pages/MerchantDashboard';
 import FarmerPage from './pages/FarmerPage';
 import ContactPage from './pages/ContactPage';
-import ProductPage from './pages/SingleProductPage';
+import LiveMarketFeed from './pages/LiveMarketFeed';
+import SingleProductPage from './pages/SingleProductPage';
+
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -43,14 +45,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-  <Route path="/farmers" element={<FarmerPage />} />
-  <Route path="/contact" element={<ContactPage />} />
-  <Route path="/login" element={<LoginPage setCurrentUser={setCurrentUser} />} />
-  <Route path="/register" element={<RegisterPage />} />
-  <Route path="/merchant" element={<MerchantPage />} />
-  <Route path="/merchant/apply" element={<TransportMerchantForm />} />
-  <Route path="/product/:id" element={<ProductCard />} />
-  <Route path='/farmer/:id' element={< FarmerCard />}/>
+        <Route path="/farmers" element={<FarmerPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/login" element={<LoginPage setCurrentUser={setCurrentUser} />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/merchant" element={<MerchantPage />} />
+        <Route path="/merchant/apply" element={<TransportMerchantForm />} />
+        <Route path="/product/:id" element={<SingleProductPage />} />
+        <Route path='/farmer/:id' element={< FarmerCard />} />
+
+        <Route path="/live-market" element={<LiveMarketFeed />} />
 
         <Route
           path="*"
@@ -67,3 +71,4 @@ function App() {
 }
 
 export default App;
+   

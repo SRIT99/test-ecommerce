@@ -1,16 +1,39 @@
 const Product = require('../models/Product');
 
 exports.create = async (req, res) => {
-  const { name, basePrice, stockQty } = req.body;
-    // 🔐 Block unverified sellers
+  // Accept all relevant fields from frontend
+  const {
+    name,
+    price,
+    unit,
+    category,
+    description,
+    imageUrl,
+    region,
+    stockQty
+  } = req.body;
+
+  // 🔐 Block unverified sellers
   if (req.user.userType === 'seller' && !req.user.isVerified) {
     return res.status(403).json({ error: 'Seller not verified by admin' });
   }
-  
-  if (!name || !basePrice) return res.status(400).json({ error: 'Missing fields' });
 
+  // Validate required fields
+  if (!name || !price) return res.status(400).json({ error: 'Missing fields' });
+
+  // Create product with all fields
   const product = await Product.create({
-    name, basePrice, stockQty: stockQty || 0, sellerId: req.user._id, lastPriceSyncAt: new Date()
+    name,
+    price,
+    unit,
+    category,
+    description,
+    imageUrl,
+    region,
+    stockQty: stockQty || 0,
+    sellerId: req.user._id,
+    sellerName: req.user.name,
+    lastPriceSyncAt: new Date()
   });
   res.status(201).json(product);
 };
