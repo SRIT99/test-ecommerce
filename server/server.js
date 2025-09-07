@@ -1,6 +1,6 @@
 const http = require('http');
 const socketio = require('socket.io');
-const app = require('./src/app');
+const app = require('./src/routes/app');
 const connectDB = require('./src/config/db');
 const { port, mongoUri } = require('./src/config/env');
 require('./src/jobs/priceSync');

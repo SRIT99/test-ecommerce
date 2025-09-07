@@ -2,13 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const productRoutes = require('./routes/productRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
-const vehicleRoutes = require('./routes/vehicleRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const authRoutes = require('./authRoutes');
+const userRoutes = require('./userRoutes');
+const productRoutes = require('./productRoutes');
+const orderRoutes = require('./orderRoutes');
+const paymentRoutes = require('./paymentRoutes');
+const vehicleRoutes = require('./vehicleRoutes');
+const adminRoutes = require('./adminRoutes');
 
 const app = express();
 app.use(cors());
