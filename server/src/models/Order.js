@@ -44,7 +44,24 @@ const orderSchema = new mongoose.Schema({
     name: { type: String },
     phone: { type: String },
     address: { type: String }
-  }
+  },
+  delivery: {
+  vehicleId: { type: String },
+  driverName: { type: String },
+  deliveryStatus: {
+    type: String,
+    enum: ['Pending', 'OutForDelivery', 'Delivered', 'Failed'],
+    default: 'Pending'
+  },
+  deliveryDate: { type: Date },
+  locationUpdates: [{
+    timestamp: Date,
+    location: String,
+    status: String
+  }],
+  notes: String
+}
+
 }, { timestamps: true });
 
 orderSchema.index({ user: 1, createdAt: -1 });
