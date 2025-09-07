@@ -1,5 +1,6 @@
-import React from 'react'
+
 import { useState } from 'react';
+import {Link} from 'react-router-dom';
 const RegisterPage = ({ setCurrentPage, setCurrentUser }) => {
     const [formData, setFormData] = useState({
         name: '',
@@ -41,18 +42,21 @@ const RegisterPage = ({ setCurrentPage, setCurrentUser }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        if (validateForm()) {
-            // Simulate registration - in a real app, this would be an API call
-            setCurrentUser({
-                name: formData.name,
-                email: formData.email,
-                type: formData.userType
-            });
-            setCurrentPage('dashboard');
-        }
+    const handleSubmit = async (e) => {
+        fetch('http://localhost:5000/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.name) {
+                setCurrentUser(data);
+                setCurrentPage('dashboard');
+            } else {
+                alert(data.message || 'Registration failed');
+            }
+        });
     };
 
 
@@ -204,7 +208,7 @@ const RegisterPage = ({ setCurrentPage, setCurrentUser }) => {
                     <div>
                         <button
                             type="submit"
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                            className="bg-blue-500 p-4 text-white group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                         >
                             Create Account
                         </button>
@@ -212,13 +216,9 @@ const RegisterPage = ({ setCurrentPage, setCurrentUser }) => {
                     <div className="text-center">
                         <p className="text-sm text-slate-600 dark:text-slate-400">
                             Already have an account?{' '}
-                            <a
-                                href="#"
-                                className="font-medium text-primary hover:text-primary-dark"
-                                onClick={() => setCurrentPage('login')}
-                            >
-                                Sign in
-                            </a>
+                            <Link to="/login" className="font-medium text-primary hover:text-primary-dark">
+                                Sign In
+                            </Link>
                         </p>
                     </div>
                 </form>

@@ -1,4 +1,5 @@
 import image1 from '../assets/hero.jpg';
+import { Link } from 'react-router-dom';
 export default function Hero() {
     return (
         <section className="bg-gradient-to-r from-green-100 to-green-200 py-20">
@@ -12,9 +13,11 @@ export default function Hero() {
                     <p className="mt-4 text-lg text-gray-700">
                         Shop directly from local farmers and support sustainable living.
                     </p>
-                    <button className="mt-6 px-6 py-3 bg-green-600 text-white text-lg font-medium rounded-lg shadow hover:bg-green-700 transition">
-                        Start Shopping
-                    </button>
+                    <Link to ="/products">
+                        <button className="mt-6 px-6 py-3 bg-green-600 text-white text-lg font-medium rounded-lg shadow hover:bg-green-700 transition">
+                            Start Shopping
+                        </button>
+                    </Link>
                 </div>
 
                 {/* Image */}
