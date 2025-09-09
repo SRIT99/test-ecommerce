@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "axios": "^1.11.0",
     "kalimati-rate": "^1.0.2"
   }
 }

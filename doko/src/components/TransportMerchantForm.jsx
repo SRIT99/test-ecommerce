@@ -129,7 +129,7 @@ const TransportMerchantForm = () => {
 
           <button
             type="submit"
-            className="w-full py-3 px-6 bg-primary hover:bg-dark text-white font-semibold rounded transition-colors"
+            className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 bg-primary hover:bg-dark text-white font-semibold rounded transition-colors"
           >
             Submit Application
           </button>
