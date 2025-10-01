@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "dev": "nodemon server.js",  
+    "create-superadmin": "node scripts/createSuperAdmin.js",
+    "create-admin": "node scripts/createAdmin.js",
+    "create-admin:client": "node scripts/createAdmin.js client@theirdomain.com 'Client Name'"
   },
   "keywords": [],
   "author": "",
@@ -23,8 +27,10 @@
     "mongoose": "^8.18.0",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
-    "nodemon": "^3.1.10",
     "socket.io": "^4.8.1",
     "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

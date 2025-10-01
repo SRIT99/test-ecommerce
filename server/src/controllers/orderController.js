@@ -134,3 +134,78 @@ exports.updateOrderStatus = async (req, res) => {
 
   res.json({ message: 'Order updated', order });
 };
+// Get farmer's order analytics
+exports.getFarmerOrderAnalytics = async (req, res) => {
+  try {
+    const farmerId = req.user._id;
+    const { period = 'month' } = req.query; // day, week, month, year
+
+    const dateFilter = getDateFilter(period);
+
+    const analytics = await Order.aggregate([
+      { $match: { 
+        'items.sellerId': farmerId,
+        createdAt: dateFilter 
+      }},
+      { $unwind: '$items' },
+      { $match: { 'items.sellerId': farmerId } },
+      {
+        $group: {
+          _id: null,
+          totalOrders: { $sum: 1 },
+          totalRevenue: { $sum: { $multiply: ['$items.unitPrice', '$items.quantity'] } },
+          totalItemsSold: { $sum: '$items.quantity' },
+          averageOrderValue: { $avg: '$totals.grandTotal' }
+        }
+      }
+    ]);
+
+    // Status distribution
+    const statusDistribution = await Order.aggregate([
+      { $match: { 
+        'items.sellerId': farmerId,
+        createdAt: dateFilter 
+      }},
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    res.json({
+      overview: analytics[0] || { totalOrders: 0, totalRevenue: 0, totalItemsSold: 0, averageOrderValue: 0 },
+      statusDistribution,
+      period
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch analytics' });
+  }
+};
+
+// Helper function for date filtering
+function getDateFilter(period) {
+  const now = new Date();
+  const filter = {};
+
+  switch (period) {
+    case 'day':
+      filter.$gte = new Date(now.setHours(0, 0, 0, 0));
+      break;
+    case 'week':
+      filter.$gte = new Date(now.setDate(now.getDate() - 7));
+      break;
+    case 'month':
+      filter.$gte = new Date(now.getFullYear(), now.getMonth(), 1);
+      break;
+    case 'year':
+      filter.$gte = new Date(now.getFullYear(), 0, 1);
+      break;
+    default:
+      filter.$gte = new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+
+  return filter;
+}

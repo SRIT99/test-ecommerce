@@ -1,6 +1,6 @@
 const http = require('http');
 const socketio = require('socket.io');
-const app = require('./src/routes/app');
+const app = require('./src/app'); // ✅ CORRECTED PATH
 const connectDB = require('./src/config/db');
 const { port, mongoUri } = require('./src/config/env');
 require('./src/jobs/priceSync');
@@ -37,4 +37,3 @@ global.io = io;
     console.error('❌ Server startup failed:', err.message);
   }
 })();
-

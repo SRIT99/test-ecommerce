@@ -1,10 +1,14 @@
 const router = require('express').Router();
 const { protect } = require('../middleware/auth');
 const { allow } = require('../middleware/roles');
-const ctrl = require('../controllers/productController');
+const productController = require('../controllers/productController');
 
-router.get('/', ctrl.listPublic);
-router.post('/', protect, allow('seller', 'admin'), ctrl.create);
-router.put('/:id', protect, allow('seller', 'admin'), ctrl.update);
+// Public routes
+router.get('/', productController.listPublic);
+router.get('/:id', productController.getProduct);
+
+// Protected routes - only sellers and admins can create/update
+router.post('/', protect, allow('seller', 'admin'), productController.create);
+router.put('/:id', protect, allow('seller', 'admin'), productController.update);
 
 module.exports = router;
