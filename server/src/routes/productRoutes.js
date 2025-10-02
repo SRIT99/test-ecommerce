@@ -4,7 +4,7 @@ const { allow } = require('../middleware/roles');
 const productController = require('../controllers/productController');
 
 // Public routes
-router.get('/', productController.listPublic);
+router.get('/', productController.listProduct);
 router.get('/:id', productController.getProduct);
 
 // Protected routes - only sellers and admins can create/update

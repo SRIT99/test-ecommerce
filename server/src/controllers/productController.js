@@ -6,7 +6,6 @@ exports.create = async (req, res) => {
     const {
       name,
       price,
-      basePrice,
       unit,
       category,
       description,
@@ -28,14 +27,10 @@ exports.create = async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields: name and price' });
     }
 
-    // Use price or basePrice (for compatibility)
-    const finalPrice = price || basePrice;
-
     // Create product with all fields
     const product = await Product.create({
       name: name.trim(),
-      price: finalPrice,
-      basePrice: finalPrice, // Set both for compatibility
+      price: price,
       unit: unit || 'kg',
       category: category || 'vegetable',
       description: description || '',
@@ -56,7 +51,7 @@ exports.create = async (req, res) => {
   }
 };
 
-exports.listPublic = async (req, res) => {
+exports.listProduct = async (req, res) => {
   try {
     const products = await Product.find({ isActive: true })
       .populate('sellerId', 'name location')

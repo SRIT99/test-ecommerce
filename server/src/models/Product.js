@@ -22,10 +22,6 @@ const productSchema = new mongoose.Schema({
     type: Number, 
     required: true 
   },
-  basePrice: { 
-    type: Number, 
-    required: true 
-  },
   unit: { 
     type: String, 
     default: 'kg',
