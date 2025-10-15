@@ -14,35 +14,46 @@ import AdminDashboard from './pages/AdminDashboard';
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
 import ProductManagement from './pages/farmer/ProductManagement';
 import OrderManagement from './pages/farmer/OrderManagement';
+import Cart from './pages/Cart';
+import OrderSuccess from './pages/OrderSuccess';
+
+import Checkout from './pages/Checkout';
+import { CartProvider } from './contexts/CartContext';
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen flex flex-col bg-gray-50">
-          <Header />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/products/:id" element={<ProductDetail />} />
-              {/* Fix: Add * for nested routes */}
-              <Route path="/farmer/dashboard/*" element={<ProtectedRoute><FarmerDashboard /></ProtectedRoute>} />
-              {/* Other protected routes */}
-              <Route path="/orders" element={<ProtectedRoute><div>Orders Page</div></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><div>Profile Page</div></ProtectedRoute>} />
+      <CartProvider>
+        <Router>
+          <div className="min-h-screen flex flex-col bg-gray-50">
+            <Header />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/products/:id" element={<ProductDetail />} />
+                {/* Fix: Add * for nested routes */}
+                <Route path="/farmer/dashboard/*" element={<ProtectedRoute><FarmerDashboard /></ProtectedRoute>} />
+                {/* Other protected routes */}
+                <Route path="/orders" element={<ProtectedRoute><div>Orders Page</div></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><div>Profile Page</div></ProtectedRoute>} />
 
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/admin/*" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/farmer/products" element={<ProtectedRoute><ProductManagement/></ProtectedRoute>} />
-              <Route path="/farmer/orders" element={<ProtectedRoute><OrderManagement/></ProtectedRoute>} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </Router>
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/admin/*" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/farmer/products" element={<ProtectedRoute><ProductManagement /></ProtectedRoute>} />
+                <Route path="/farmer/orders" element={<ProtectedRoute><OrderManagement /></ProtectedRoute>} />
+
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </Router>
+      </CartProvider>
     </AuthProvider >
   );
 }

@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors'); // ✅ FIX: cors not cons
 const bodyParser = require('body-parser');
 const connectToDatabase = require('./database/db');
-
+const path = require('path');
 // Import all routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -37,12 +37,14 @@ app.get('/test', (req, res) => {
       'POST /auth/signup',
       'POST /auth/login',
       'GET /products',
-      'GET /users/me'
+      'GET /users/me',
+
     ]
   });
 });
 
 // Mount all routes
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/products', productRoutes);

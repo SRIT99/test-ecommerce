@@ -110,3 +110,187 @@ exports.update = async (req, res) => {
     res.status(500).json({ error: 'Failed to update product' });
   }
 };
+// search and filter products for buyers
+exports.searchProducts = async (req, res) => {
+  try {
+    const { 
+      search, 
+      category, 
+      minPrice, 
+      maxPrice, 
+      region, 
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 12
+    } = req.query;
+
+    let filter = { isActive: true };
+    
+    // Text search
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    // Filters
+    if (category) filter.category = category;
+    if (region) filter.region = region;
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .select('-__v');
+
+    const total = await Product.countDocuments(filter);
+
+    res.json({
+      products,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Search failed' });
+  }
+};
+// src/controllers/productController.js
+// Get product by ID with seller details
+exports.getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id)
+      .populate('sellerId', 'name email phone location isVerified createdAt')
+      .select('-__v');
+    
+    if (!product) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Product not found' 
+      });
+    }
+
+    // Get similar products
+    const similarProducts = await Product.find({
+      category: product.category,
+      isActive: true,
+      _id: { $ne: product._id }
+    })
+    .limit(4)
+    .populate('sellerId', 'name location')
+    .select('name price imageUrl category region averageRating');
+
+    res.json({
+      success: true,
+      product,
+      similarProducts
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch product' 
+    });
+  }
+};
+
+exports.searchProducts = async (req, res) => {
+  try {
+    const { 
+      search, 
+      category, 
+      minPrice, 
+      maxPrice, 
+      region, 
+      sortBy = 'createdAt',
+      sortOrder = 'desc',  // 👈 User can pass 'asc' or 'desc'
+      page = 1,
+      limit = 12
+    } = req.query;
+
+    // Build filter object
+    let filter = { isActive: true };
+    
+    // Text search across name, description, category
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { category: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Category & region filters
+    if (category && category !== 'all') filter.category = category;
+    if (region && region !== 'all') filter.region = region;
+
+    // Price range filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    // ✅ Dynamic sorting
+    // Convert sortOrder ('asc' / 'desc') to MongoDB format (1 or -1)
+    const sortDirection = sortOrder === 'asc' ? 1 : -1;
+    const sort = { [sortBy]: sortDirection };
+
+    // Pagination
+    const skip = (page - 1) * limit;
+
+    // Fetch products
+    const products = await Product.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate('sellerId', 'name location isVerified')
+      .select('-__v');
+
+    const total = await Product.countDocuments(filter);
+
+    // Fetch available filters
+    const categories = await Product.distinct('category', { isActive: true });
+    const regions = await Product.distinct('region', { isActive: true });
+
+    const minPriceValue = await Product.findOne({ isActive: true }).sort({ price: 1 }).select('price');
+    const maxPriceValue = await Product.findOne({ isActive: true }).sort({ price: -1 }).select('price');
+
+    res.json({
+      success: true,
+      products,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      },
+      filters: {
+        categories,
+        regions,
+        priceRange: {
+          min: minPriceValue?.price || 0,
+          max: maxPriceValue?.price || 0
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to search products' 
+    });
+  }
+};

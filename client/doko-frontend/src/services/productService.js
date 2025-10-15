@@ -50,5 +50,19 @@ export const productService = {
       console.error('Error deleting product:', error);
       throw error;
     }
+  },
+
+  async uploadProductImage(formData) {
+    try {
+      const response = await api.post('/products/upload/image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading product image:', error);
+      throw error;
+    }
   }
 };
