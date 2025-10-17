@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "dev": "nodemon server.js",  
+    "dev": "nodemon server.js",
     "create-superadmin": "node scripts/createSuperAdmin.js",
     "create-admin": "node scripts/createAdmin.js",
     "create-admin:client": "node scripts/createAdmin.js client@theirdomain.com 'Client Name'"
@@ -19,6 +19,7 @@
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
+    "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",
     "dotenv": "^17.2.2",

@@ -52,17 +52,22 @@ export const productService = {
     }
   },
 
-  async uploadProductImage(formData) {
-    try {
-      const response = await api.post('/products/upload/image', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error uploading product image:', error);
-      throw error;
+  // In productService.js - add error handling
+async uploadProductImage(formData) {
+  try {
+    const response = await api.post('/products/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      timeout: 30000, // 30 second timeout for large files
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading product image:', error);
+    if (error.code === 'ECONNABORTED') {
+      throw new Error('Image upload timeout - file may be too large');
     }
+    throw error;
   }
+}
 };

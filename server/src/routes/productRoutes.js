@@ -12,7 +12,9 @@ router.get('/:id', productController.getProductById); // Get single product
 router.post('/', protect, allow('seller', 'admin'), productController.create);
 router.put('/:id', protect, allow('seller', 'admin'), productController.update);
 
-router.post('/upload/image', protect, allow('seller', 'admin'), 
+router.post('/upload/image', 
+  protect, 
+  allow('seller', 'admin'), 
   uploadController.uploadProductImage, 
   uploadController.handleImageUpload
 );
