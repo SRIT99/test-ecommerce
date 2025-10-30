@@ -23,6 +23,8 @@ import Orders from './pages/buyer/Orders';
 import OrderDetails from './pages/buyer/OrderDetails';
 import EsewaPayment from './pages/payment/EsewaPayment';
 import PaymentFailed from './pages/payment/PaymentFailed';
+import FarmerProfile from './pages/farmer/FarmerProfile';
+import FarmerAnalytics from './pages/farmer/FarmerAnalytics';
 function App() {
   return (
     <AuthProvider>
@@ -42,12 +44,13 @@ function App() {
                 {/* Other protected routes */}
                 <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                 <Route path="/order-details/:orderId" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
-                <Route path="/profile" element={<ProtectedRoute><div>Profile Page</div></ProtectedRoute>} />
 
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/admin/*" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/farmer/products" element={<ProtectedRoute><ProductManagement /></ProtectedRoute>} />
                 <Route path="/farmer/orders" element={<ProtectedRoute><OrderManagement /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><FarmerProfile /></ProtectedRoute>} />
+                <Route path="/analytics" element={<ProtectedRoute><FarmerAnalytics /></ProtectedRoute>} />
 
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />

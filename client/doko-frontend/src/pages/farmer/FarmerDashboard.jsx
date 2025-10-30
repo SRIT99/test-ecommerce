@@ -6,6 +6,8 @@ import FarmerHeader from './FarmerHeader';
 import DashboardOverview from './DashboardOverview';
 import ProductManagement from './ProductManagement';
 import OrderManagement from './OrderManagement';
+import FarmerProfile from './FarmerProfile';
+import FarmerAnalytics from './FarmerAnalytics';
 
 const FarmerDashboard = () => {
   const { user } = useAuth();
@@ -34,7 +36,7 @@ const FarmerDashboard = () => {
         <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-green-200/50">
           <FarmerHeader onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         </div>
-        
+
         {/* Page Content - Proper scrolling area */}
         <div className="flex-1 overflow-auto">
           <div className="p-6 max-w-7xl mx-auto w-full">
@@ -42,8 +44,8 @@ const FarmerDashboard = () => {
               <Route index element={<DashboardOverview />} />
               <Route path="products" element={<ProductManagement />} />
               <Route path="orders" element={<OrderManagement />} />
-              <Route path="profile" element={<div className="text-center py-12">Profile Management - Coming Soon</div>} />
-              <Route path="analytics" element={<div className="text-center py-12">Analytics - Coming Soon</div>} />
+              <Route path="profile" element={<div className="text-center py-12"><FarmerProfile /></div>} />
+              <Route path="analytics" element={<div className="text-center py-12"><FarmerAnalytics /></div>} />
               <Route path="*" element={<Navigate to="/farmer/dashboard" replace />} />
             </Routes>
           </div>
@@ -52,7 +54,7 @@ const FarmerDashboard = () => {
 
       {/* Mobile Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />

@@ -41,7 +41,16 @@ exports.createOrder = async (req, res) => {
                 missingProducts
             });
         }
+         const ownProducts = dbProducts.filter(product => 
+            product.sellerId && product.sellerId._id.toString() === req.user._id.toString()
+        );
 
+        if (ownProducts.length > 0) {
+            const productNames = ownProducts.map(p => p.name).join(', ');
+            return res.status(400).json({
+                error: `You cannot purchase your own products: ${productNames}`
+            });
+        }
         // Create line items with proper price handling
         const lineItems = items.map(item => {
             const product = dbProducts.find(p => p._id.toString() === item.productId);

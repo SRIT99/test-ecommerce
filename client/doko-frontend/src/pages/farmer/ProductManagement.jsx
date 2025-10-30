@@ -1,34 +1,50 @@
+// src/components/farmer/ProductManagement.js
 import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom'; // Add useNavigate
-import { productService } from '../../services/productService';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { farmerService } from '../../services/farmerService';
 import { useAuth } from '../../hooks/useAuth';
-import ProductForm from './ProductForm'; // Make sure this import is correct
+import ProductForm from './ProductForm';
 
 const ProductManagement = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate(); // Add navigate
+    const navigate = useNavigate();
     const { user } = useAuth();
 
     const action = searchParams.get('action');
     const editId = searchParams.get('id');
 
     useEffect(() => {
-        // Only fetch products if we're not in add/edit mode
         if (!action) {
             fetchProducts();
         }
-    }, [action]); // Add action as dependency
+    }, [action]);
 
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const data = await productService.getProducts();
-            setProducts(Array.isArray(data) ? data : []);
+            setError('');
+
+            // Use farmerService to get farmer-specific products
+            const data = await farmerService.getProducts();
+
+            // Handle different response formats
+            if (data && data.products) {
+                // If response has products array
+                setProducts(Array.isArray(data.products) ? data.products : []);
+            } else if (Array.isArray(data)) {
+                // If response is directly an array
+                setProducts(data);
+            } else {
+                console.error('Unexpected products response format:', data);
+                setProducts([]);
+                setError('Unexpected data format received');
+            }
         } catch (err) {
-            setError('Failed to load products');
+            console.error('Failed to load products:', err);
+            setError('Failed to load products. Please try again.');
             setProducts([]);
         } finally {
             setLoading(false);
@@ -36,7 +52,6 @@ const ProductManagement = () => {
     };
 
     const handleSaveProduct = () => {
-        // After saving, go back to product list and refresh
         navigate('/farmer/dashboard/products');
         fetchProducts(); // Refresh the product list
     };
@@ -49,17 +64,14 @@ const ProductManagement = () => {
         if (!window.confirm('Are you sure you want to delete this product?')) return;
 
         try {
-            // TODO: Add delete endpoint in backend
-            // await productService.deleteProduct(productId);
+            await farmerService.deleteProduct(productId);
+            // Remove from local state
             setProducts(products.filter(p => p._id !== productId));
         } catch (err) {
+            console.error('Failed to delete product:', err);
             setError('Failed to delete product');
         }
     };
-
-    // Debug: Check if action is detected
-    console.log('Current action:', action);
-    console.log('Current editId:', editId);
 
     // Show product form if action is add/edit
     if (action === 'add' || action === 'edit') {
@@ -72,7 +84,6 @@ const ProductManagement = () => {
         );
     }
 
-    // Rest of your existing component for product list view...
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -95,7 +106,7 @@ const ProductManagement = () => {
                 </div>
             )}
 
-            {/* Products Grid - your existing product list code */}
+            {/* Products Grid */}
             {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, i) => (
@@ -125,7 +136,6 @@ const ProductManagement = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {products.map((product) => (
                                 <div key={product._id} className="bg-white rounded-2xl p-6 shadow-lg border border-green-100/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                                    {/* Your existing product card code */}
                                     <div className="relative h-48 bg-gray-200 rounded-xl mb-4 overflow-hidden">
                                         <img
                                             src={product.imageUrl || '/api/placeholder/300/200'}
@@ -170,103 +180,3 @@ const ProductManagement = () => {
 };
 
 export default ProductManagement;
-
-// import React, { useState, useEffect } from 'react';
-// import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-// import { useAuth } from '../../hooks/useAuth';
-
-// const ProductManagement = () => {
-//     const [searchParams] = useSearchParams();
-//     const navigate = useNavigate();
-//     const { user } = useAuth();
-
-//     const action = searchParams.get('action');
-//     const editId = searchParams.get('id');
-
-//     console.log('🔍 DEBUG - Action:', action, 'Edit ID:', editId);
-//     console.log('🔍 DEBUG - Full URL:', window.location.href);
-
-//     // Show product form if action is add/edit
-//     if (action === 'add' || action === 'edit') {
-//         return (
-//             <div className="p-6">
-//                 <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-//                     <strong>SUCCESS!</strong> Product form should be visible now.
-//                     <br />
-//                     Action: {action} | ID: {editId || 'N/A'}
-//                 </div>
-
-//                 {/* Simple test form */}
-//                 <div className="bg-white rounded-2xl p-8 shadow-lg border border-green-100/50">
-//                     <h2 className="text-3xl font-bold text-gray-900 mb-2">
-//                         {action === 'add' ? 'Add New Product' : 'Edit Product'}
-//                     </h2>
-//                     <p className="text-gray-600 mb-6">
-//                         {action === 'add' ? 'Add a new product to your farm' : `Editing product ${editId}`}
-//                     </p>
-
-//                     <div className="space-y-4">
-//                         <div>
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
-//                                 Product Name
-//                             </label>
-//                             <input
-//                                 type="text"
-//                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-//                                 placeholder="Enter product name"
-//                             />
-//                         </div>
-
-//                         <div className="flex space-x-4">
-//                             <button
-//                                 onClick={() => navigate('/farmer/dashboard/products')}
-//                                 className="flex-1 bg-green-500 text-white py-3 rounded-xl font-semibold hover:bg-green-600 transition-colors"
-//                             >
-//                                 Save Product
-//                             </button>
-//                             <button
-//                                 onClick={() => navigate('/farmer/dashboard/products')}
-//                                 className="flex-1 bg-gray-500 text-white py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors"
-//                             >
-//                                 Cancel
-//                             </button>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//         );
-//     }
-
-//     // Product list view
-//     return (
-//         <div className="space-y-6">
-//             <div className="flex justify-between items-center">
-//                 <div>
-//                     <h1 className="text-3xl font-bold text-gray-900">Product Management</h1>
-//                     <p className="text-gray-600">Manage your farm products</p>
-//                 </div>
-//                 <Link
-//                     to="?action=add"
-//                     className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-green-200 transition-all duration-200"
-//                     onClick={() => console.log('🎯 Add Product button clicked!')}
-//                 >
-//                     + Add New Product
-//                 </Link>
-//             </div>
-
-//             <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-//                 <strong>DEBUG INFO:</strong>
-//                 <br />- Current action: {action || 'none'}
-//                 <br />- Click "Add New Product" above to test
-//             </div>
-
-//             <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
-//                 <div className="text-6xl mb-4">🌱</div>
-//                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Product Management</h3>
-//                 <p className="text-gray-600">Click "Add New Product" to test the form</p>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default ProductManagement;

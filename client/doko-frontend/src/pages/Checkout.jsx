@@ -61,6 +61,16 @@ const Checkout = () => {
         setError('');
 
         try {
+            const ownProducts = items.filter(item =>
+                item.product.sellerId === user._id
+            );
+
+            if (ownProducts.length > 0) {
+                const productNames = ownProducts.map(item => item.product.name).join(', ');
+                setError(`You cannot buy your own products: ${productNames}`);
+                setLoading(false);
+                return;
+            }
             // Prepare order data for backend
             const orderData = {
                 items: items.map(item => ({
