@@ -54,7 +54,6 @@ const Checkout = () => {
         }
         return true;
     };
-
     const handlePlaceOrder = async () => {
         if (!validateForm()) return;
 
@@ -76,23 +75,96 @@ const Checkout = () => {
                 paymentMethod: paymentMethod
             };
 
-            // Call your backend order creation API
-            const order = await orderService.createOrder(orderData);
+            console.log('Creating order with data:', orderData);
 
-            // Clear cart on successful order
-            clearCart();
+            // Step 1: Create order first
+            const orderResponse = await orderService.createOrder(orderData);
+            const order = orderResponse.order;
 
-            // Redirect to order success page
-            navigate(`/order-success/${order._id}`, {
-                state: {
-                    orderId: order._id,
-                    paymentMethod: paymentMethod
+            console.log('Order created successfully:', order);
+
+            // Step 2: Handle payment based on method
+            if (paymentMethod === 'COD') {
+                // For COD, just clear cart and redirect to success
+                clearCart();
+                navigate(`/order-success/${order._id}`, {
+                    state: {
+                        orderId: order._id,
+                        paymentMethod: paymentMethod
+                    }
+                });
+            }
+            // else if (paymentMethod === 'eSewa') {
+            //     console.log('Initiating eSewa payment...');
+
+            //     // For eSewa, get payment data and redirect to eSewa page
+            //     const paymentResponse = await orderService.initiatePayment(order._id, 'esewa');
+
+            //     console.log('eSewa payment response:', paymentResponse);
+
+            //     if (paymentResponse.paymentData) {
+            //         // ✅ Redirect to eSewa payment page with payment data
+            //         navigate('/payment/esewa', {
+            //             state: {
+            //                 paymentData: paymentResponse.paymentData,
+            //                 orderId: order._id
+            //             }
+            //         });
+            //     } else {
+            //         throw new Error('No payment data received from server for eSewa');
+            //     }
+            // }
+            // In Checkout.jsx - update the eSewa payment section
+            else if (paymentMethod === 'eSewa') {
+                console.log('Initiating eSewa payment...');
+
+                // For eSewa, get payment data and redirect to eSewa page
+                const paymentResponse = await orderService.initiatePayment(order._id, 'esewa');
+
+                console.log('🔍 eSewa payment response:', paymentResponse);
+                console.log('🔍 Response keys:', Object.keys(paymentResponse));
+                console.log('🔍 Has paymentData?', !!paymentResponse.paymentData);
+                console.log('🔍 Full response structure:', JSON.stringify(paymentResponse, null, 2));
+
+                if (paymentResponse.paymentData) {
+                    // ✅ Redirect to eSewa payment page with payment data
+                    navigate('/payment/esewa', {
+                        state: {
+                            paymentData: paymentResponse.paymentData,
+                            orderId: order._id
+                        }
+                    });
+                } else {
+                    // Debug what we actually got
+                    console.error('❌ No paymentData received. Got:', paymentResponse);
+                    throw new Error('No payment data received from server for eSewa');
                 }
-            });
+            }
+            else if (paymentMethod === 'Khalti') {
+                console.log('Initiating Khalti payment...');
+
+                // For Khalti, initiate payment and redirect to gateway
+                const paymentResponse = await orderService.initiatePayment(order._id, 'khalti');
+
+                console.log('Khalti payment response:', paymentResponse);
+
+                if (paymentResponse.paymentUrl) {
+                    window.location.href = paymentResponse.paymentUrl;
+                } else if (paymentResponse.url) {
+                    window.location.href = paymentResponse.url;
+                } else {
+                    throw new Error('No payment URL received from server for Khalti');
+                }
+            }
 
         } catch (err) {
-            console.error('Order creation error:', err);
-            setError(err.response?.data?.error || 'Failed to place order. Please try again.');
+            console.error('Order/payment error details:', {
+                message: err.message,
+                response: err.response?.data,
+                status: err.response?.status
+            });
+
+            setError(err.response?.data?.error || err.message || 'Failed to place order. Please try again.');
         } finally {
             setLoading(false);
         }

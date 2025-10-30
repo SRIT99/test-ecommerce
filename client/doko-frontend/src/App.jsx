@@ -16,10 +16,13 @@ import ProductManagement from './pages/farmer/ProductManagement';
 import OrderManagement from './pages/farmer/OrderManagement';
 import Cart from './pages/Cart';
 import OrderSuccess from './pages/OrderSuccess';
-
+import PaymentProcessing from './pages/PaymentProcessing';
 import Checkout from './pages/Checkout';
 import { CartProvider } from './contexts/CartContext';
-
+import Orders from './pages/buyer/Orders';
+import OrderDetails from './pages/buyer/OrderDetails';
+import EsewaPayment from './pages/payment/EsewaPayment';
+import PaymentFailed from './pages/payment/PaymentFailed';
 function App() {
   return (
     <AuthProvider>
@@ -37,7 +40,8 @@ function App() {
                 {/* Fix: Add * for nested routes */}
                 <Route path="/farmer/dashboard/*" element={<ProtectedRoute><FarmerDashboard /></ProtectedRoute>} />
                 {/* Other protected routes */}
-                <Route path="/orders" element={<ProtectedRoute><div>Orders Page</div></ProtectedRoute>} />
+                <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+                <Route path="/order-details/:orderId" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><div>Profile Page</div></ProtectedRoute>} />
 
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -47,7 +51,10 @@ function App() {
 
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
-                <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+                <Route path="/payment/processing" element={<PaymentProcessing />} />
+                <Route path="/payment/esewa" element={<ProtectedRoute><EsewaPayment /></ProtectedRoute>} />
+                <Route path="/order-success/:orderId" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
+                <Route path="/payment/failed" element={<ProtectedRoute><PaymentFailed /></ProtectedRoute>} />
               </Routes>
             </main>
             <Footer />

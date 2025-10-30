@@ -15,10 +15,18 @@ export const useAuth = () => {
   const isSuperAdmin = () => {
     return context.user?.userType === 'superadmin';
   };
+  // const isSeller = () => {
+  //   return context.user?.userType === 'seller';
+  // };
+  // const isBuyer = () => {
+  //   return context.user?.userType === 'buyer';
+  // };
 
   return {
     ...context,
     isAdmin,
-    isSuperAdmin
+    isSuperAdmin,
+    // isSeller,
+    // isBuyer
   };
 };

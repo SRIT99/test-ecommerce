@@ -2,10 +2,15 @@ const router = require('express').Router();
 const { protect } = require('../middleware/auth');
 const ctrl = require('../controllers/paymentController');
 
-// eSewa
+// // eSewa
+// router.post('/esewa/pay', protect, ctrl.payEsewa);
+// router.get('/esewa/verify', ctrl.verifyEsewa);
+// router.get('/esewa/failure', (_req, res) => res.send('eSewa payment failed'));
+// eSewa routes
 router.post('/esewa/pay', protect, ctrl.payEsewa);
 router.get('/esewa/verify', ctrl.verifyEsewa);
-router.get('/esewa/failure', (_req, res) => res.send('eSewa payment failed'));
+router.get('/esewa/failure', ctrl.failEsewa);
+router.get('/esewa/status', protect, ctrl.checkEsewaStatus); // Add status check
 
 // Khalti
 router.post('/khalti/pay', protect, ctrl.payKhalti);

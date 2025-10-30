@@ -6,7 +6,7 @@ export const orderService = {
   
   async createOrder(orderData) {
     try {
-      const response = await api.post('/api/orders', orderData);
+      const response = await api.post('/orders', orderData);
       return response.data;
     } catch (error) {
       console.error('Order creation error:', error);
@@ -16,7 +16,7 @@ export const orderService = {
 
   async getMyOrders() {
     try {
-      const response = await api.get('/api/orders/mine');
+      const response = await api.get('/orders/mine');
       return response.data;
     } catch (error) {
       console.error('Error fetching buyer orders:', error);
@@ -26,7 +26,7 @@ export const orderService = {
 
   async getOrderById(orderId) {
     try {
-      const response = await api.get(`/api/orders/${orderId}`);
+      const response = await api.get(`/orders/${orderId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching order:', error);
@@ -78,15 +78,32 @@ export const orderService = {
 
   // ==================== PAYMENT METHODS ====================
   
-  async initiatePayment(orderId, paymentMethod) {
+// In OrderService.js
+// In OrderService.js
+async initiatePayment(orderId, paymentMethod) {
     try {
-      const response = await api.post(`/payments/${paymentMethod}/pay`, { orderId });
-      return response.data;
+        console.log(`🔄 OrderService: Initiating ${paymentMethod} payment for order:`, orderId);
+        
+        const response = await api.post(`/payments/${paymentMethod}/pay`, { orderId });
+        
+        console.log(`✅ OrderService: ${paymentMethod} payment response:`, response.data);
+        console.log(`🔍 Response structure:`, {
+            hasPaymentData: !!response.data.paymentData,
+            hasSuccess: !!response.data.success,
+            keys: Object.keys(response.data)
+        });
+        
+        return response.data;
     } catch (error) {
-      console.error('Error initiating payment:', error);
-      throw error;
+        console.error(`❌ OrderService: Error initiating ${paymentMethod} payment:`, error);
+        console.error('Error details:', {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status
+        });
+        throw error;
     }
-  },
+},
 
   async verifyPayment(paymentMethod, verificationData) {
     try {
