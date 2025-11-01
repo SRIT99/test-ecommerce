@@ -1,13 +1,46 @@
 import api from './api';
 
 export const productService = {
-  async getProducts(params = {}) {
+  async getProducts(filters = {}) {
     try {
-      const response = await api.get('/products', { params });
-      return response.data;
+      // Only use search endpoint if we have active filters
+      if (filters.search || filters.category || filters.sort !== 'name') {
+        const params = {
+          search: filters.search || '',
+          category: filters.category || '',
+          sortBy: this.getSortField(filters.sort),
+          sortOrder: this.getSortOrder(filters.sort),
+          page: 1,
+          limit: 100
+        };
+
+        const response = await api.get('/products/search', { params });
+        return response.data.products; // Extract products from search response
+      } else {
+        // No filters, use basic listing
+        const response = await api.get('/products');
+        return response.data;
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
       throw error;
+    }
+  },
+
+  getSortField(sort) {
+    switch (sort) {
+      case 'name': return 'name';
+      case 'price': return 'price';
+      case '-price': return 'price';
+      case 'createdAt': return 'createdAt';
+      default: return 'createdAt';
+    }
+  },
+
+  getSortOrder(sort) {
+    switch (sort) {
+      case '-price': return 'desc';
+      default: return 'asc';
     }
   },
 

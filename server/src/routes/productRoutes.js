@@ -6,7 +6,7 @@ const uploadController = require('../controllers/uploadController');
 
 // Public routes
 router.get('/', productController.listProduct);
-router.get('/', productController.searchProducts); // Search & filter products
+router.get('/search', productController.searchProducts); // Search & filter products
 router.get('/:id', productController.getProductById); // Get single product
 
 // Protected routes - only sellers and admins can create/update

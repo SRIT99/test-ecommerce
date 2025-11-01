@@ -12,7 +12,10 @@ export const useProducts = (filters = {}) => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
+        console.log('Fetching products with filters:', filters); // Debug log
+        
         const response = await productService.getProducts(filters);
+        console.log('API Response:', response); // Debug log
         
         // Ensure we always have an array, even if API returns different structure
         let productsArray = [];
@@ -25,12 +28,13 @@ export const useProducts = (filters = {}) => {
           productsArray = response.data;
         }
         
+        console.log('Final products array:', productsArray); // Debug log
         setProducts(productsArray);
         setError(null);
       } catch (err) {
         console.error('Error fetching products:', err);
         setError(err.response?.data?.error || 'Failed to fetch products');
-        setProducts([]); // Ensure it's always an array
+        setProducts([]);
       } finally {
         setLoading(false);
       }
