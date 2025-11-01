@@ -1,36 +1,41 @@
+// src/components/ProtectedRoute.jsx
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth'; // Fixed import
-const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated, loading, userType } = useAuth();
+import { useAuth } from '../../hooks/useAuth';
+
+const ProtectedRoute = ({
+    children,
+    requiredUserType = null,
+    allowedRoles = [],
+    redirectTo = '/login'
+}) => {
+    const { user, isAuthenticated, loading } = useAuth();
     const location = useLocation();
 
-    console.log('🔐 ProtectedRoute Debug:');
-    console.log(' - isAuthenticated:', isAuthenticated);
-    console.log(' - loading:', loading);
-    console.log(' - user:', userType);
-    console.log(' - requested path:', location.pathname);
+    // Show loading state while checking authentication
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+            </div>
+        );
+    }
 
-    // if (loading) {
-    //     return (
-    //         <div className="min-h-screen flex items-center justify-center">
-    //             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-    //         </div>
-    //     );
-    // }
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+        return <Navigate to={redirectTo} state={{ from: location }} replace />;
+    }
 
-    // if (loading) {
-    //     return (
-    //         <div className="min-h-screen flex items-center justify-center">
-    //             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-    //         </div>
-    //     );
-    // }
+    // Check user type if required
+    if (requiredUserType && user?.userType !== requiredUserType) {
+        // Redirect to unauthorized page or home
+        return <Navigate to="/unauthorized" replace />;
+    }
 
-    // if (!isAuthenticated) {
-    //     // Redirect to login page with return url
-    //     return <Navigate to="/login" state={{ from: location }} replace />;
-    // }
+    // Check roles if required
+    if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+        return <Navigate to="/unauthorized" replace />;
+    }
 
     return children;
 };

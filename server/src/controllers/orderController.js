@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const User = require('../models/User');
 
 exports.createOrder = async (req, res) => {
     try {
@@ -148,6 +149,7 @@ exports.myOrders = async (req, res) => {
         });
     }
 };
+
 // Get single order by ID
 exports.getOrderById = async (req, res) => {
     try {
@@ -193,6 +195,7 @@ exports.getOrderById = async (req, res) => {
         });
     }
 };
+
 // Update order status
 exports.updateOrderStatus = async (req, res) => {
     try {
@@ -240,6 +243,402 @@ exports.updateOrderStatus = async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to update order status'
+        });
+    }
+};
+
+// ==================== FARMER/SELLER ORDER FUNCTIONS ====================
+
+// Get orders for farmer/seller (their products' orders)
+exports.getFarmerOrders = async (req, res) => {
+    try {
+        const { status, search, page = 1, limit = 10 } = req.query;
+        
+        // Build query for farmer's orders
+        let query = {
+            'items.sellerId': req.user._id // Orders containing products sold by this farmer
+        };
+
+        // Add status filter if provided
+        if (status && status !== 'all') {
+            query.status = status;
+        }
+
+        // Add search filter if provided
+        if (search) {
+            query.$or = [
+                { _id: { $regex: search, $options: 'i' } },
+                { 'user.name': { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const orders = await Order.find(query)
+            .populate('user', 'name email phone')
+            .populate('items.product', 'name price images')
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await Order.countDocuments(query);
+
+        res.json({
+            success: true,
+            orders,
+            totalPages: Math.ceil(total / limit),
+            currentPage: parseInt(page),
+            total
+        });
+
+    } catch (error) {
+        console.error('Get farmer orders error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching farmer orders'
+        });
+    }
+};
+
+// Get farmer analytics
+exports.getFarmerAnalytics = async (req, res) => {
+    try {
+        const farmerId = req.user._id;
+
+        // Get total orders count
+        const totalOrders = await Order.countDocuments({
+            'items.sellerId': farmerId
+        });
+
+        // Get orders by status
+        const ordersByStatus = await Order.aggregate([
+            { $match: { 'items.sellerId': farmerId } },
+            { $group: { _id: '$status', count: { $sum: 1 } } }
+        ]);
+
+        // Get total revenue from delivered orders
+        const revenueData = await Order.aggregate([
+            { 
+                $match: { 
+                    'items.sellerId': farmerId,
+                    status: 'Delivered',
+                    'payment.status': 'Completed'
+                } 
+            },
+            { 
+                $unwind: '$items' 
+            },
+            {
+                $match: {
+                    'items.sellerId': farmerId
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { 
+                        $sum: { 
+                            $multiply: ['$items.unitPrice', '$items.quantity'] 
+                        } 
+                    }
+                }
+            }
+        ]);
+
+        // Get recent orders for timeline
+        const recentOrders = await Order.find({
+            'items.sellerId': farmerId
+        })
+        .populate('user', 'name')
+        .populate('items.product', 'name')
+        .sort({ createdAt: -1 })
+        .limit(5);
+
+        const totalRevenue = revenueData[0]?.totalRevenue || 0;
+
+        res.json({
+            success: true,
+            analytics: {
+                totalOrders,
+                ordersByStatus: ordersByStatus.reduce((acc, item) => {
+                    acc[item._id] = item.count;
+                    return acc;
+                }, {}),
+                totalRevenue,
+                recentOrders
+            }
+        });
+
+    } catch (error) {
+        console.error('Get farmer analytics error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching farmer analytics'
+        });
+    }
+};
+
+// ==================== ADMIN ORDER FUNCTIONS ====================
+
+// Get all orders (Admin only - sees ALL orders in the system)
+exports.getAllOrders = async (req, res) => {
+    try {
+        const { status, search, page = 1, limit = 10 } = req.query;
+        
+        console.log('🔄 Fetching all orders with filters:', { status, search, page, limit });
+        
+        // Build query - admin can see ALL orders
+        let query = {};
+
+        // Add status filter if provided
+        if (status && status !== 'all') {
+            query.status = status;
+        }
+
+        // Add search filter if provided
+        if (search) {
+            query.$or = [
+                { _id: { $regex: search, $options: 'i' } },
+                { 'items.name': { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        console.log('🔍 MongoDB query:', JSON.stringify(query, null, 2));
+
+        // First, let's check if there are any orders at all
+        const totalOrders = await Order.countDocuments();
+        console.log(`📊 Total orders in database: ${totalOrders}`);
+
+        const orders = await Order.find(query)
+            .populate('user', 'name email phone')
+            .populate('items.product', 'name price images category')
+            .populate('items.sellerId', 'name email phone')
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        console.log(`✅ Found ${orders.length} orders matching query`);
+
+        // If no orders found, return empty array instead of error
+        res.json({
+            success: true,
+            orders: orders || [],
+            totalPages: Math.ceil(totalOrders / limit),
+            currentPage: parseInt(page),
+            total: totalOrders
+        });
+
+    } catch (error) {
+        console.error('❌ Get all orders error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching all orders: ' + error.message
+        });
+    }
+};
+
+// Get admin analytics
+exports.getAdminAnalytics = async (req, res) => {
+    try {
+        // Total orders count
+        const totalOrders = await Order.countDocuments();
+
+        // Orders by status
+        const ordersByStatus = await Order.aggregate([
+            {
+                $group: {
+                    _id: '$status',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // Total revenue (only from delivered and paid orders)
+        const revenueData = await Order.aggregate([
+            { 
+                $match: { 
+                    status: 'Delivered',
+                    'payment.status': 'Completed'
+                } 
+            },
+            { 
+                $group: { 
+                    _id: null, 
+                    totalRevenue: { $sum: '$totals.grandTotal' },
+                    averageOrderValue: { $avg: '$totals.grandTotal' }
+                } 
+            }
+        ]);
+
+        // Orders over time (last 30 days)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const ordersOverTime = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: thirtyDaysAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$createdAt"
+                        }
+                    },
+                    count: { $sum: 1 },
+                    revenue: { $sum: '$totals.grandTotal' }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        // Top sellers
+        const topSellers = await Order.aggregate([
+            { $match: { status: 'Delivered' } },
+            { $unwind: '$items' },
+            {
+                $group: {
+                    _id: '$items.sellerId',
+                    totalSales: { $sum: '$items.quantity' },
+                    totalRevenue: { $sum: { $multiply: ['$items.unitPrice', '$items.quantity'] } }
+                }
+            },
+            { $sort: { totalRevenue: -1 } },
+            { $limit: 5 },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'sellerInfo'
+                }
+            },
+            {
+                $project: {
+                    sellerName: { $arrayElemAt: ['$sellerInfo.name', 0] },
+                    sellerEmail: { $arrayElemAt: ['$sellerInfo.email', 0] },
+                    totalSales: 1,
+                    totalRevenue: 1
+                }
+            }
+        ]);
+
+        // Recent activity
+        const recentOrders = await Order.find()
+            .populate('user', 'name')
+            .populate('items.product', 'name')
+            .sort({ createdAt: -1 })
+            .limit(10);
+
+        const totalRevenue = revenueData[0]?.totalRevenue || 0;
+        const averageOrderValue = revenueData[0]?.averageOrderValue || 0;
+
+        res.json({
+            success: true,
+            analytics: {
+                totalOrders,
+                ordersByStatus: ordersByStatus.reduce((acc, item) => {
+                    acc[item._id] = item.count;
+                    return acc;
+                }, {}),
+                totalRevenue,
+                averageOrderValue,
+                ordersOverTime,
+                topSellers,
+                recentOrders
+            }
+        });
+
+    } catch (error) {
+        console.error('Get admin analytics error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching admin analytics'
+        });
+    }
+};
+
+// Update order status (Admin version - can update any order)
+exports.updateOrderStatusAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        // Validate status
+        const validStatuses = ['Created', 'Confirmed', 'Dispatched', 'Delivered', 'Cancelled'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid status'
+            });
+        }
+
+        const order = await Order.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true }
+        )
+        .populate('user', 'name email')
+        .populate('items.product', 'name');
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                error: 'Order not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Order status updated successfully',
+            order
+        });
+
+    } catch (error) {
+        console.error('Admin update order status error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to update order status'
+        });
+    }
+};
+
+// Get order details for admin (can view any order)
+exports.getOrderDetailsAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const order = await Order.findById(id)
+            .populate('user', 'name email phone')
+            .populate('items.product', 'name imageUrl price category')
+            .populate('items.sellerId', 'name email phone');
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                error: 'Order not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            order
+        });
+
+    } catch (error) {
+        console.error('Get order details admin error:', error);
+        
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid order ID'
+            });
+        }
+        
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch order details'
         });
     }
 };

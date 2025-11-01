@@ -14,7 +14,7 @@ const FarmerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Redirect non-farmers
-  if (user?.userType !== 'seller') {
+  if (user?.roles !== 'seller') {
     return <Navigate to="/" replace />;
   }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { adminService } from '../../services/adminService';
+import { userService } from '../../services/adminService';
 
 const AdminManagement = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +13,7 @@ const AdminManagement = () => {
     setMessage('');
 
     try {
-      await adminService.inviteAdmin({ email, role });
+      await userService.inviteAdmin({ email, role });
       setMessage(`Invitation sent successfully to ${email}`);
       setEmail('');
     } catch (error) {

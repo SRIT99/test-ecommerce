@@ -20,7 +20,7 @@ const OrderManagement = () => {
     fetchOrders();
   }, [activeFilter]);
 
-  const fetchOrders = async () => {
+   const fetchOrders = async () => {
     try {
       setLoading(true);
       const data = await orderService.getFarmerOrders({

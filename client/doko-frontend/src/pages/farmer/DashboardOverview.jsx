@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { farmerService } from '../../services/farmerService';
 import { useAuth } from '../../hooks/useAuth';
+import WeatherForecast from '../../components/common/WeatherForecast';
 
 const DashboardOverview = () => {
     const [dashboardData, setDashboardData] = useState({
@@ -202,9 +203,9 @@ const DashboardOverview = () => {
                                             ₹{order.totals?.grandTotal || 0}
                                         </p>
                                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                                                order.status === 'Processing' || order.status === 'Confirmed' ? 'bg-yellow-100 text-yellow-800' :
-                                                    order.status === 'Created' ? 'bg-blue-100 text-blue-800' :
-                                                        'bg-gray-100 text-gray-800'
+                                            order.status === 'Processing' || order.status === 'Confirmed' ? 'bg-yellow-100 text-yellow-800' :
+                                                order.status === 'Created' ? 'bg-blue-100 text-blue-800' :
+                                                    'bg-gray-100 text-gray-800'
                                             }`}>
                                             {order.status}
                                         </span>
@@ -286,6 +287,12 @@ const DashboardOverview = () => {
                         <h3 className="font-semibold text-gray-900 mb-2">View Analytics</h3>
                         <p className="text-sm text-gray-600">Track sales and performance</p>
                     </Link>
+
+                </div>
+                {/* Weather & Market Section - NEW ADDITION */}
+                <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 mt-3">
+                    <WeatherForecast showAgriculturalInsights={true} />
+
                 </div>
             </div>
         </div>

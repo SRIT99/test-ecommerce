@@ -1,7 +1,44 @@
 // src/services/orderService.js
 import api from './api';
-
+const ENDPOINTS = {
+  ADMIN_ORDERS: '/admin/orders',
+  ORDERS: '/orders',
+};
 export const orderService = {
+
+  // API endpoint constants
+
+
+  // ==================== ADMIN ORDER MANAGEMENT ====================
+  async getAdminOrders(params = {}) {
+    try {
+      const response = await api.get(ENDPOINTS.ADMIN_ORDERS, { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching admin orders:', error);
+      throw error;
+    }
+  },
+
+  async getOrderDetailsAdmin(orderId) {
+    try {
+      const response = await api.get(`${ENDPOINTS.ADMIN_ORDERS}/${orderId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching admin order details:', error);
+      throw error;
+    }
+  },
+
+  async updateOrderStatusAdmin(orderId, statusData) {
+    try {
+      const response = await api.patch(`${ENDPOINTS.ADMIN_ORDERS}/${orderId}/status`, statusData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating order status (admin):', error);
+      throw error;
+    }
+  },
   // ==================== BUYER ORDER METHODS ====================
   
   async createOrder(orderData) {

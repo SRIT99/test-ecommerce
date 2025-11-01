@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/common/ProductCard';
-
 const Home = () => {
     const { products, loading } = useProducts({ limit: 8 });
 
@@ -102,6 +101,7 @@ const Home = () => {
                     )}
                 </div>
             </section>
+           
         </div>
     );
 };

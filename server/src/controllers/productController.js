@@ -110,65 +110,7 @@ exports.update = async (req, res) => {
     res.status(500).json({ error: 'Failed to update product' });
   }
 };
-// search and filter products for buyers
-exports.searchProducts = async (req, res) => {
-  try {
-    const { 
-      search, 
-      category, 
-      minPrice, 
-      maxPrice, 
-      region, 
-      sortBy = 'createdAt',
-      sortOrder = 'desc',
-      page = 1,
-      limit = 12
-    } = req.query;
 
-    let filter = { isActive: true };
-    
-    // Text search
-    if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
-      ];
-    }
-    
-    // Filters
-    if (category) filter.category = category;
-    if (region) filter.region = region;
-    if (minPrice || maxPrice) {
-      filter.price = {};
-      if (minPrice) filter.price.$gte = parseFloat(minPrice);
-      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
-    }
-
-    const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
-    const skip = (page - 1) * limit;
-
-    const products = await Product.find(filter)
-      .sort(sort)
-      .skip(skip)
-      .limit(parseInt(limit))
-      .select('-__v');
-
-    const total = await Product.countDocuments(filter);
-
-    res.json({
-      products,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Search failed' });
-  }
-};
-// src/controllers/productController.js
 // Get product by ID with seller details
 exports.getProductById = async (req, res) => {
   try {
@@ -215,7 +157,7 @@ exports.searchProducts = async (req, res) => {
       maxPrice, 
       region, 
       sortBy = 'createdAt',
-      sortOrder = 'desc',  // 👈 User can pass 'asc' or 'desc'
+      sortOrder = 'desc',
       page = 1,
       limit = 12
     } = req.query;
@@ -294,3 +236,59 @@ exports.searchProducts = async (req, res) => {
     });
   }
 };
+
+exports.delete = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { hardDelete = false } = req.query;
+
+    let query = { _id: id };
+    
+    // Sellers can only delete their own products, admins can delete any
+    if (req.user.userType === 'seller') {
+      query.sellerId = req.user._id;
+    }
+
+    let result;
+
+    // Only admins can hard delete
+    if (hardDelete && req.user.userType === 'admin') {
+      result = await Product.findByIdAndDelete(id);
+    } else {
+      // Soft delete for everyone
+      result = await Product.findOneAndUpdate(
+        query,
+        { 
+          isActive: false,
+          deactivatedAt: new Date(),
+          ...(req.user.userType === 'admin' && { deactivatedBy: req.user._id })
+        },
+        { new: true }
+      );
+    }
+
+    if (!result) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Product not found or access denied' 
+      });
+    }
+
+    const message = hardDelete && req.user.userType === 'admin' 
+      ? 'Product permanently deleted successfully'
+      : 'Product deleted successfully';
+
+    res.json({
+      success: true,
+      message,
+      product: result
+    });
+  } catch (error) {
+    console.error('Product deletion error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to delete product: ' + error.message 
+    });
+  }
+};
+

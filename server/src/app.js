@@ -3,6 +3,7 @@ const cors = require('cors'); // ✅ FIX: cors not cons
 const bodyParser = require('body-parser');
 const connectToDatabase = require('./database/db');
 const path = require('path');
+
 // Import all routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -12,12 +13,15 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const vehicleRoutes = require('./routes/vehicleRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const farmerRoutes = require('./routes/farmerRoutes');
+const livemarketRoutes = require('./routes/livemarketRoutes');
 const app = express();
+
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
+
 
 // Test routes
 app.get('/health', (req, res) => {
@@ -53,6 +57,8 @@ app.use('/payments', paymentRoutes);
 app.use('/vehicles', vehicleRoutes);
 app.use('/admin', adminRoutes);
 app.use('/farmer', farmerRoutes);
+app.use('/market', livemarketRoutes);
+
 
 // Connect to database (but don't start server here)
 connectToDatabase();
