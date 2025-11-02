@@ -17,7 +17,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Dashboard from "./pages/Dashboard";
-import Weather from "./pages/weather";
+import Weather from "./pages/Weather";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import PaymentProcessing from "./pages/PaymentProcessing";
@@ -32,7 +32,7 @@ import OrderDetails from "./pages/buyer/OrderDetails";
 import BuyerProfile from "./components/profiles/BuyerProfile";
 
 // Seller pages
-import FarmerDashboard from "./pages/farmer/FarmerDashboard";
+//import FarmerDashboard from "./pages/farmer/FarmerDashboard";
 import ProductManagement from "./pages/farmer/ProductManagement";
 import OrderManagement from "./pages/farmer/OrderManagement";
 import FarmerProfile from "./pages/farmer/FarmerProfile";
