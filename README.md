@@ -131,22 +131,22 @@ test-ecommerce/
 ## 🎯 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/auth/profile` - Get user profile
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+- `GET /auth/profile` - Get user profile
 
 ### Products
-- `GET /api/products` - Get all products
-- `GET /api/products/:id` - Get single product
-- `POST /api/products` - Create product (Admin)
-- `PUT /api/products/:id` - Update product (Admin)
-- `DELETE /api/products/:id` - Delete product (Admin)
+- `GET /products` - Get all products
+- `GET /products/:id` - Get single product
+- `POST /products` - Create product (Admin)
+- `PUT /products/:id` - Update product (Admin)
+- `DELETE /products/:id` - Delete product (Admin)
 
 ### Orders
-- `POST /api/orders` - Create new order
-- `GET /api/orders` - Get user orders
-- `GET /api/orders/:id` - Get order details
-- `PUT /api/orders/:id` - Update order status
+- `POST /orders` - Create new order
+- `GET /orders` - Get user orders
+- `GET /orders/:id` - Get order details
+- `PUT /orders/:id` - Update order status
 
 ## 🔧 Environment Variables
 
